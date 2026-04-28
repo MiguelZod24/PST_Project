@@ -35,6 +35,12 @@ def _screenshot(login_page: LoginPage, name: str = "captura") -> None:
     "cuando inicia sesión, debe ser redirigido fuera de /auth/login."
 )
 def test_tc001_login_valid_customer(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa email y contraseña válidos de un customer y hace clic en Login.
+    esperado: El sistema autentica al usuario y lo redirige fuera de la página de login.
+    impacto: Si falla, los clientes no pueden acceder a la plataforma.
+    accion: Verificar credenciales de prueba y disponibilidad del servidor.
+    """
     login_page.navigate()
     login_page.login(CUSTOMER_EMAIL, VALID_PASSWORD)
     # La redirección fuera de /auth/login confirma la autenticación exitosa
@@ -55,6 +61,12 @@ def test_tc001_login_valid_customer(login_page: LoginPage):
     "cuando inicia sesión, debe ser redirigido fuera de /auth/login."
 )
 def test_tc002_login_valid_admin(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa email y contraseña válidos de un admin y hace clic en Login.
+    esperado: El sistema autentica al administrador y lo redirige fuera de la página de login.
+    impacto: Si falla, los administradores no pueden gestionar la plataforma.
+    accion: Verificar credenciales de admin y disponibilidad del servidor.
+    """
     login_page.navigate()
     login_page.login(ADMIN_EMAIL, VALID_PASSWORD)
     expect(login_page.page).not_to_have_url(re.compile(r".*/auth/login.*"))
@@ -75,6 +87,12 @@ def test_tc002_login_valid_admin(login_page: LoginPage):
     "y el usuario debe permanecer en la página de login."
 )
 def test_tc003_login_wrong_email(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa un email que no existe en el sistema.
+    esperado: El sistema muestra un mensaje de error y el usuario permanece en login.
+    impacto: Si falla, usuarios no registrados podrían acceder sin credenciales válidas.
+    accion: Revisar la validación de credenciales en el backend.
+    """
     login_page.navigate()
     login_page.login("usuarioinexistente@correo.com", VALID_PASSWORD)
     expect(login_page.alert_error).to_be_visible()
@@ -94,6 +112,12 @@ def test_tc003_login_wrong_email(login_page: LoginPage):
     "cuando se intenta iniciar sesión, debe aparecer un mensaje de error."
 )
 def test_tc004_login_wrong_password(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa un email válido pero una contraseña incorrecta.
+    esperado: El sistema muestra un mensaje de error y el usuario permanece en login.
+    impacto: Si falla, la seguridad de las cuentas queda comprometida.
+    accion: Revisar la validación de contraseña en el backend.
+    """
     login_page.navigate()
     login_page.login(CUSTOMER_EMAIL, "contrasena_incorrecta_999")
     expect(login_page.alert_error).to_be_visible()
@@ -113,6 +137,12 @@ def test_tc004_login_wrong_password(login_page: LoginPage):
     "cuando se intenta iniciar sesión, debe aparecer un mensaje de error."
 )
 def test_tc005_login_wrong_both(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa email y contraseña que no corresponden a ningún usuario.
+    esperado: El sistema muestra un mensaje de error y el usuario permanece en login.
+    impacto: Si falla, cualquier combinación de datos podría acceder al sistema.
+    accion: Revisar la lógica de autenticación completa en el backend.
+    """
     login_page.navigate()
     login_page.login("nadie@prueba.com", "clave_invalida_000")
     expect(login_page.alert_error).to_be_visible()
@@ -133,6 +163,12 @@ def test_tc005_login_wrong_both(login_page: LoginPage):
     "el envío y el usuario debe permanecer en /auth/login."
 )
 def test_tc006_invalid_email_format(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa un email sin el símbolo @ y hace clic en Login.
+    esperado: El sistema bloquea el envío o muestra error de formato.
+    impacto: Si falla, datos malformados podrían llegar al servidor sin validación.
+    accion: Revisar la validación de formato de email en el frontend.
+    """
     login_page.navigate()
     login_page.fill_email("emailsinformato")
     login_page.fill_password(VALID_PASSWORD)
@@ -160,6 +196,12 @@ def test_tc006_invalid_email_format(login_page: LoginPage):
     "el sistema no debe autenticar al usuario y debe permanecer en /auth/login."
 )
 def test_tc007_empty_fields(login_page: LoginPage):
+    """
+    escenario: El usuario hace clic en Login sin rellenar ningún campo.
+    esperado: El sistema no autentica al usuario y permanece en la página de login.
+    impacto: Si falla, el formulario podría enviarse vacío al servidor.
+    accion: Revisar la validación de campos obligatorios en el frontend.
+    """
     login_page.navigate()
     # No se rellena nada; se hace clic directamente en submit
     login_page.click_login()
@@ -180,6 +222,12 @@ def test_tc007_empty_fields(login_page: LoginPage):
     "el sistema no debe autenticar al usuario."
 )
 def test_tc008_only_email(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa solo el email sin contraseña y hace clic en Login.
+    esperado: El sistema no autentica al usuario y permanece en la página de login.
+    impacto: Si falla, un campo vacío podría ser aceptado como credencial válida.
+    accion: Revisar la validación del campo contraseña en el frontend.
+    """
     login_page.navigate()
     login_page.fill_email(CUSTOMER_EMAIL)
     # Se omite fill_password intencionalmente
@@ -201,6 +249,12 @@ def test_tc008_only_email(login_page: LoginPage):
     "el sistema no debe autenticar al usuario."
 )
 def test_tc009_only_password(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa solo la contraseña sin email y hace clic en Login.
+    esperado: El sistema no autentica al usuario y permanece en la página de login.
+    impacto: Si falla, un campo vacío podría ser aceptado como credencial válida.
+    accion: Revisar la validación del campo email en el frontend.
+    """
     login_page.navigate()
     # Se omite fill_email intencionalmente
     login_page.fill_password(VALID_PASSWORD)
@@ -222,6 +276,12 @@ def test_tc009_only_password(login_page: LoginPage):
     "el sistema no debe autenticar al usuario; debe mostrar error o bloquear el envío."
 )
 def test_tc010_whitespace_fields(login_page: LoginPage):
+    """
+    escenario: El usuario ingresa solo espacios en blanco en ambos campos y hace clic en Login.
+    esperado: El sistema no autentica al usuario y permanece en la página de login.
+    impacto: Si falla, espacios en blanco podrían ser aceptados como credenciales válidas.
+    accion: Revisar que el frontend aplique trim() antes de validar los campos.
+    """
     login_page.navigate()
     login_page.fill_email("   ")
     login_page.fill_password("   ")
@@ -244,6 +304,12 @@ def test_tc010_whitespace_fields(login_page: LoginPage):
     "el texto ingresado no sea legible en pantalla durante la escritura."
 )
 def test_tc011_password_masked(login_page: LoginPage):
+    """
+    escenario: El usuario observa el campo de contraseña en la página de login.
+    esperado: El campo tiene type=password y el texto ingresado aparece enmascarado.
+    impacto: Si falla, las contraseñas quedan expuestas en pantalla.
+    accion: Verificar el atributo type del campo password en el HTML.
+    """
     login_page.navigate()
     # type="password" es el mecanismo estándar del navegador para ocultar el texto
     expect(login_page.password_input).to_have_attribute("type", "password")
@@ -263,6 +329,12 @@ def test_tc011_password_masked(login_page: LoginPage):
     "Al hacer clic, el usuario debe navegar fuera de /auth/login."
 )
 def test_tc012_forgot_password_link(login_page: LoginPage):
+    """
+    escenario: El usuario hace clic en el enlace Forgot Password de la página de login.
+    esperado: El enlace es visible y al hacer clic navega fuera de la página de login.
+    impacto: Si falla, los usuarios no pueden recuperar su contraseña.
+    accion: Verificar que el enlace existe y que la ruta de recuperación está activa.
+    """
     login_page.navigate()
     expect(login_page.forgot_password_link).to_be_visible()
     login_page.forgot_password_link.click()
@@ -285,6 +357,12 @@ def test_tc012_forgot_password_link(login_page: LoginPage):
     "Al hacer clic, el usuario debe navegar a /auth/register."
 )
 def test_tc013_navigate_to_register(login_page: LoginPage):
+    """
+    escenario: El usuario hace clic en el enlace de registro desde la página de login.
+    esperado: El sistema navega a la página de registro /auth/register.
+    impacto: Si falla, los nuevos usuarios no pueden crear una cuenta desde el login.
+    accion: Verificar que el enlace de registro existe y apunta a /auth/register.
+    """
     login_page.navigate()
     expect(login_page.register_link).to_be_visible()
     login_page.register_link.click()

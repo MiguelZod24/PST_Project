@@ -1,0 +1,13 @@
+# Python 
+__pycache__/ 
+*.pyc 
+.pytest_cache/ 
+# Allure resultados crudos (se regeneran en CI) 
+reports/allure-results/ 
+# Reporte HTML (se regenera en CI) 
+reports/reporte_login.html 
+# Playwright 
+test-results/ 
+# Entorno virtual 
+.venv/ 
+venv/ 
