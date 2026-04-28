@@ -26,16 +26,10 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt
 
-      # 4. Instala el navegador Chromium que usa Playwright
-      - name: Instalar dependencias del sistema para Playwright
-        run: |
-         sudo apt-get update
-         sudo apt-get install -y libasound2t64 libatk1.0-0 libatk-bridge2.0-0 \
-         libcups2 libdrm2 libgbm1 libgtk-3-0 libnspr4 libnss3 libxcomposite1 \
-         libxdamage1 libxfixes3 libxrandr2 libxshmfence1
-
-      - name: Instalar Playwright
-        run: playwright install chromium
+      # 4. Instala Chromium y todas sus dependencias de sistema.
+      # --with-deps delega en Playwright la lista de paquetes correcta para Ubuntu 24 (Noble).
+      - name: Instalar Playwright y dependencias del sistema
+        run: playwright install --with-deps chromium
 
       # 5. Crea la carpeta reports/ por si no existe
       - name: Crear carpeta reports
