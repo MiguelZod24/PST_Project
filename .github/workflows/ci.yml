@@ -1,0 +1,54 @@
+name: PST Login Tests
+
+on:
+  schedule:
+    # Corre todos los días a las 8AM hora España (UTC+2 en verano = 6AM UTC)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Permite correrlo manualmente desde GitHub con un botón
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descarga el código del repo en el servidor
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # 2. Instala Python 3.11 en el servidor
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. Instala todas las dependencias del requirements.txt
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      # 4. Instala el navegador Chromium que usa Playwright
+      - name: Instalar Playwright
+        run: playwright install chromium --with-deps
+
+      # 5. Crea la carpeta reports/ por si no existe
+      - name: Crear carpeta reports
+        run: mkdir -p reports
+
+      # 6. Corre los 13 tests (headless por defecto en Linux)
+      - name: Correr tests
+        run: pytest tests/login/
+
+      # 7. Copia el reporte HTML a una carpeta especial para GitHub Pages
+      - name: Preparar reporte para GitHub Pages
+        if: always()
+        run: |
+          mkdir -p gh-pages
+          cp reports/reporte_login.html gh-pages/index.html
+
+      # 8. Publica el reporte en GitHub Pages
+      - name: Publicar en GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
