@@ -26,10 +26,17 @@ def pytest_runtest_makereport(item, call):
 # ---------------------------------------------------------------------------
 # Fixture: page (scope=function) — crea contexto propio y captura resultado
 # ---------------------------------------------------------------------------
+@pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args):
+    return {**browser_type_launch_args, "args": ["--disable-dev-shm-usage"]}
+
+
 @pytest.fixture(scope="function")
 def page(request, browser):
     context = browser.new_context()
     pg = context.new_page()
+    pg.set_default_timeout(90_000)
+    pg.set_default_navigation_timeout(90_000)
     start_time = time.time()
 
     yield pg
