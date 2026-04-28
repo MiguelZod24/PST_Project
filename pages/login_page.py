@@ -25,9 +25,13 @@ class LoginPage:
         wait_for con state='visible' garantiza que Angular terminó de montar el
         componente antes de que el test intente interactuar con él; sin esta
         espera, fill() puede lanzar ElementNotFound en cargas lentas.
+        El timeout de 90s cubre los runners de CI con CPU/red limitada.
         """
-        self.page.goto("https://practicesoftwaretesting.com/auth/login")
-        self.email_input.wait_for(state="visible")
+        self.page.goto(
+            "https://practicesoftwaretesting.com/auth/login",
+            timeout=90_000,
+        )
+        self.email_input.wait_for(state="visible", timeout=90_000)
 
     def fill_email(self, email: str) -> None:
         """Rellena el campo #email con el valor dado (reemplaza contenido previo)."""
